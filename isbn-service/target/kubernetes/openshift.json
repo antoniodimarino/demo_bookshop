@@ -1,0 +1,209 @@
+[{
+  "apiVersion" : "v1",
+  "kind" : "Service",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-uri" : "<<unknown>>",
+      "app.quarkus.io/quarkus-version" : "3.13.2",
+      "app.quarkus.io/commit-id" : "c58336de723832a14f008efd77bd8fb69c81c562",
+      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
+      "app.quarkus.io/build-timestamp" : "2025-10-14 - 08:29:18 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "isbn-service",
+      "app.kubernetes.io/version" : "1.0.0",
+      "app.kubernetes.io/managed-by" : "quarkus",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "isbn-service"
+  },
+  "spec" : {
+    "ports" : [ {
+      "name" : "http",
+      "port" : 80,
+      "protocol" : "TCP",
+      "targetPort" : 8080
+    } ],
+    "selector" : {
+      "app.kubernetes.io/name" : "isbn-service",
+      "app.kubernetes.io/version" : "1.0.0"
+    },
+    "type" : "ClusterIP"
+  }
+},{
+  "apiVersion" : "image.openshift.io/v1",
+  "kind" : "ImageStream",
+  "metadata" : {
+    "labels" : {
+      "app.kubernetes.io/name" : "isbn-service",
+      "app.kubernetes.io/version" : "1.0.0"
+    },
+    "name" : "s2i-java"
+  },
+  "spec" : {
+    "dockerImageRepository" : "fabric8/s2i-java",
+    "lookupPolicy" : {
+      "local" : true
+    }
+  }
+},{
+  "apiVersion" : "image.openshift.io/v1",
+  "kind" : "ImageStream",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-uri" : "<<unknown>>",
+      "app.quarkus.io/quarkus-version" : "3.13.2",
+      "app.quarkus.io/commit-id" : "c58336de723832a14f008efd77bd8fb69c81c562",
+      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
+      "app.quarkus.io/build-timestamp" : "2025-10-14 - 08:29:18 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "isbn-service",
+      "app.kubernetes.io/version" : "1.0.0",
+      "app.kubernetes.io/managed-by" : "quarkus",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "isbn-service"
+  },
+  "spec" : {
+    "lookupPolicy" : {
+      "local" : true
+    }
+  }
+},{
+  "apiVersion" : "build.openshift.io/v1",
+  "kind" : "BuildConfig",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-uri" : "<<unknown>>",
+      "app.quarkus.io/quarkus-version" : "3.13.2",
+      "app.quarkus.io/commit-id" : "c58336de723832a14f008efd77bd8fb69c81c562",
+      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
+      "app.quarkus.io/build-timestamp" : "2025-10-14 - 08:29:18 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/name" : "isbn-service",
+      "app.kubernetes.io/version" : "1.0.0",
+      "app.kubernetes.io/managed-by" : "quarkus",
+      "app.openshift.io/runtime" : "quarkus"
+    },
+    "name" : "isbn-service"
+  },
+  "spec" : {
+    "output" : {
+      "to" : {
+        "kind" : "ImageStreamTag",
+        "name" : "isbn-service:1.0.0"
+      }
+    },
+    "source" : {
+      "binary" : { }
+    },
+    "strategy" : {
+      "sourceStrategy" : {
+        "from" : {
+          "kind" : "ImageStreamTag",
+          "name" : "s2i-java:2.3"
+        }
+      }
+    }
+  }
+},{
+  "apiVersion" : "apps/v1",
+  "kind" : "Deployment",
+  "metadata" : {
+    "annotations" : {
+      "app.openshift.io/vcs-uri" : "<<unknown>>",
+      "app.quarkus.io/quarkus-version" : "3.13.2",
+      "app.quarkus.io/commit-id" : "c58336de723832a14f008efd77bd8fb69c81c562",
+      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
+      "app.quarkus.io/build-timestamp" : "2025-10-14 - 08:29:18 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/managed-by" : "quarkus",
+      "app.openshift.io/runtime" : "quarkus",
+      "app.kubernetes.io/version" : "1.0.0",
+      "app.kubernetes.io/name" : "isbn-service"
+    },
+    "name" : "isbn-service"
+  },
+  "spec" : {
+    "replicas" : 1,
+    "selector" : {
+      "matchLabels" : {
+        "app.kubernetes.io/version" : "1.0.0",
+        "app.kubernetes.io/name" : "isbn-service"
+      }
+    },
+    "template" : {
+      "metadata" : {
+        "annotations" : {
+          "alpha.image.policy.openshift.io/resolve-names" : "*",
+          "app.openshift.io/vcs-uri" : "<<unknown>>",
+          "app.quarkus.io/quarkus-version" : "3.13.2",
+          "app.quarkus.io/commit-id" : "c58336de723832a14f008efd77bd8fb69c81c562",
+          "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
+          "app.quarkus.io/build-timestamp" : "2025-10-14 - 08:29:18 +0000"
+        },
+        "labels" : {
+          "app.kubernetes.io/managed-by" : "quarkus",
+          "app.openshift.io/runtime" : "quarkus",
+          "app.kubernetes.io/version" : "1.0.0",
+          "app.kubernetes.io/name" : "isbn-service"
+        }
+      },
+      "spec" : {
+        "containers" : [ {
+          "env" : [ {
+            "name" : "JAVA_APP_JAR",
+            "value" : "/deployments/quarkus-run.jar"
+          } ],
+          "image" : "isbn-service:1.0.0",
+          "imagePullPolicy" : "Always",
+          "livenessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/q/health/live",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 5,
+            "periodSeconds" : 10,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          },
+          "name" : "isbn-service",
+          "ports" : [ {
+            "containerPort" : 8080,
+            "name" : "http",
+            "protocol" : "TCP"
+          } ],
+          "readinessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/q/health/ready",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 5,
+            "periodSeconds" : 10,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          },
+          "startupProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/q/health/started",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 5,
+            "periodSeconds" : 10,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          }
+        } ]
+      }
+    }
+  }
+}]
