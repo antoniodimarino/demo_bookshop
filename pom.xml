@@ -10,9 +10,6 @@
     <module>isbn-service</module>
     <module>inventory-service</module>
     <module>catalog-service</module>
-    <module>order-service</module>
-    <module>payment-service</module>
-    <module>user-service</module>
     <module>api-gateway</module>
   </modules>
 

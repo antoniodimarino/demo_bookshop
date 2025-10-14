@@ -1,0 +1,16 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: api-gateway
+  namespace: <nome_progetto_openshift>
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: api-gateway:latest
+  source:
+    type: Binary
+  strategy:
+    type: Docker
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2

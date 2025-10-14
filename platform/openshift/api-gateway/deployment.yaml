@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: <nome_progetto_openshift>
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: api-gateway }
+  template:
+    metadata:
+      labels: { app: api-gateway }
+    spec:
+      containers:
+      - name: api-gateway
+        image: image-registry.openshift-image-registry.svc:5000/<nome_progetto_openshift>/api-gateway:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: QUARKUS_HTTP_PORT
+          value: "8080"
+        readinessProbe:
+          httpGet: { path: "/q/health/ready", port: 8080 }
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet: { path: "/q/health/live", port: 8080 }
+          initialDelaySeconds: 10
+          timeoutSeconds: 3

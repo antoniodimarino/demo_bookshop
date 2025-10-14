@@ -1,0 +1,6 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+    name: api-gateway
+    namespace: <nome_progetto_openshift>
+spec: {}

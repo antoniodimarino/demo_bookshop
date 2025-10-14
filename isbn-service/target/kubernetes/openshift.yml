@@ -5,9 +5,9 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/commit-id: 0852b2156e152284f904edc5e79df5cbf1b6b7d7
+    app.quarkus.io/commit-id: dfa03ff289f7ee497e6a51c06255a5f34d269699
     app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/demo_bookshop.git
-    app.quarkus.io/build-timestamp: 2025-10-14 - 13:27:32 +0000
+    app.quarkus.io/build-timestamp: 2025-10-14 - 14:13:16 +0000
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -19,7 +19,7 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      targetPort: 8080
+      targetPort: 8082
   selector:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -43,9 +43,9 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/commit-id: 0852b2156e152284f904edc5e79df5cbf1b6b7d7
+    app.quarkus.io/commit-id: dfa03ff289f7ee497e6a51c06255a5f34d269699
     app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/demo_bookshop.git
-    app.quarkus.io/build-timestamp: 2025-10-14 - 13:27:32 +0000
+    app.quarkus.io/build-timestamp: 2025-10-14 - 14:13:16 +0000
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -62,9 +62,9 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/commit-id: 0852b2156e152284f904edc5e79df5cbf1b6b7d7
+    app.quarkus.io/commit-id: dfa03ff289f7ee497e6a51c06255a5f34d269699
     app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/demo_bookshop.git
-    app.quarkus.io/build-timestamp: 2025-10-14 - 13:27:32 +0000
+    app.quarkus.io/build-timestamp: 2025-10-14 - 14:13:16 +0000
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -90,35 +90,35 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/commit-id: 0852b2156e152284f904edc5e79df5cbf1b6b7d7
+    app.quarkus.io/commit-id: dfa03ff289f7ee497e6a51c06255a5f34d269699
     app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/demo_bookshop.git
-    app.quarkus.io/build-timestamp: 2025-10-14 - 13:27:32 +0000
+    app.quarkus.io/build-timestamp: 2025-10-14 - 14:13:16 +0000
   labels:
     app.kubernetes.io/managed-by: quarkus
     app.openshift.io/runtime: quarkus
-    app.kubernetes.io/version: 1.0.0
     app.kubernetes.io/name: isbn-service
+    app.kubernetes.io/version: 1.0.0
   name: isbn-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/version: 1.0.0
       app.kubernetes.io/name: isbn-service
+      app.kubernetes.io/version: 1.0.0
   template:
     metadata:
       annotations:
         alpha.image.policy.openshift.io/resolve-names: '*'
         app.openshift.io/vcs-uri: <<unknown>>
         app.quarkus.io/quarkus-version: 3.13.2
-        app.quarkus.io/commit-id: 0852b2156e152284f904edc5e79df5cbf1b6b7d7
+        app.quarkus.io/commit-id: dfa03ff289f7ee497e6a51c06255a5f34d269699
         app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/demo_bookshop.git
-        app.quarkus.io/build-timestamp: 2025-10-14 - 13:27:32 +0000
+        app.quarkus.io/build-timestamp: 2025-10-14 - 14:13:16 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.openshift.io/runtime: quarkus
-        app.kubernetes.io/version: 1.0.0
         app.kubernetes.io/name: isbn-service
+        app.kubernetes.io/version: 1.0.0
     spec:
       containers:
         - env:
@@ -130,7 +130,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /q/health/live
-              port: 8080
+              port: 8082
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -138,14 +138,14 @@ spec:
             timeoutSeconds: 10
           name: isbn-service
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
               name: http
               protocol: TCP
           readinessProbe:
             failureThreshold: 3
             httpGet:
               path: /q/health/ready
-              port: 8080
+              port: 8082
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -155,7 +155,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /q/health/started
-              port: 8080
+              port: 8082
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10

@@ -1,0 +1,16 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: catalog-service
+  namespace: <nome_progetto_openshift>
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: catalog-service:latest
+  source:
+    type: Binary
+  strategy:
+    type: Docker
+  successfulBuildsHistoryLimit: 2
+  failedBuildsHistoryLimit: 2

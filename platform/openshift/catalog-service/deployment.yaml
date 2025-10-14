@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+  namespace: <nome_progetto_openshift>
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: catalog-service }
+  template:
+    metadata:
+      labels: { app: catalog-service }
+    spec:
+      containers:
+      - name: catalog-service
+        image: image-registry.openshift-image-registry.svc:5000/<nome_progetto_openshift>/catalog-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: QUARKUS_HTTP_PORT
+          value: "8080"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql
+              key: database-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql
+              key: database-password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql
+              key: database-name
+        - name: DB_HOST
+          value: "postgresql"
+        - name: DB_PORT
+          value: "5432"
+        readinessProbe:
+          httpGet: { path: "/q/health/ready", port: 8080 }
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet: { path: "/q/health/live", port: 8080 }
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
