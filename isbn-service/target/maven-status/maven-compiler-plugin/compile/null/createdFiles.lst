@@ -1,0 +1,4 @@
+it\example\isbn\IsbnResource.class
+it\example\isbn\IsbnValidator.class
+it\example\isbn\Book.class
+it\example\isbn\IsbnResource$ValidationResult.class
