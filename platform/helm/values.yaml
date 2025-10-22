@@ -15,8 +15,6 @@ kafka:
     kafka: 
       port: 9092
 
-namespace: antonio-dimarino-dev
-
 services:
   api-gateway:
     enabled: true

@@ -1,0 +1,81 @@
+{{- /* Loop su tutti i servizi definiti in values.yaml */}}
+{{- range .Values.services }}
+{{- if .enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+spec:
+  replicas: {{ .replicaCount | default 1 }}
+  selector:
+    matchLabels: { app: {{ .name }} }
+  template:
+    metadata:
+      labels: { app: {{ .name }} }
+    spec:
+      {{- if .isFrontend }}
+      volumes:
+      - name: nginx-cache
+        emptyDir: {}
+      - name: nginx-run
+        emptyDir: {}
+      {{- end }}
+      containers:
+      - name: {{ .name }}
+        {{- /* L'immagine punta all'ImageStream di OpenShift, usando 
+          il Namespace in cui Helm fa il deploy (tramite .Release.Namespace) 
+        */}}
+        image: image-registry.openshift-image-registry.svc:5000/{{ $.Release.Namespace }}/{{ .name }}:{{ .imageTag | default "latest" }}
+        ports:
+        - containerPort: {{ .containerPort | default 8080 }}
+        
+        {{- /* Logica per le Probe (diverse per frontend e backend) */}}
+        {{- if .isFrontend }}
+        readinessProbe:
+          httpGet: { path: "/", port: {{ .containerPort | default 8080 }} }
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet: { path: "/", port: {{ .containerPort | default 8080 }} }
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+        {{- else }}
+        readinessProbe:
+          httpGet: { path: "/q/health/ready", port: {{ .containerPort | default 8080 }} }
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet: { path: "/q/health/live", port: {{ .containerPort | default 8080 }} }
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+        {{- end }}
+
+        {{- /* Logica per le variabili d'ambiente (solo per chi ha il DB) */}}
+        {{- if .needsDb }}
+        env:
+        - name: QUARKUS_HTTP_PORT
+          value: {{ .containerPort | quote | default "8080" }}
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              # Usiamo il nome del Secret creato dal subchart postgresql
+              name: {{ $.Values.postgresql.auth.secretName | default (printf "%s-postgresql" $.Release.Name) }}
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Values.postgresql.auth.secretName | default (printf "%s-postgresql" $.Release.Name) }}
+              key: password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Values.postgresql.auth.secretName | default (printf "%s-postgresql" $.Release.Name) }}
+              key: database
+        - name: DB_HOST
+          value: {{ printf "%s-postgresql" $.Release.Name | quote }}
+        - name: DB_PORT
+          value: "5432"
+        {{- end }}
+{{- end }}
+{{- end }}

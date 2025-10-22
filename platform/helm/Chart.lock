@@ -1,0 +1,9 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 14.2.3
+- name: redpanda
+  repository: https://charts.redpanda.com/
+  version: 5.7.15
+digest: sha256:9762f67bea5f84e1aea3d5a3c6ec65445521474410c41d2e60be27f8981c03d1
+generated: "2025-10-22T16:37:30.4537822+02:00"
