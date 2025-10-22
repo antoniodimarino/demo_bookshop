@@ -1,6 +1,6 @@
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
-    name: api-gateway
+    name: inventory-service
     namespace: antonio-dimarino-dev
 spec: {}

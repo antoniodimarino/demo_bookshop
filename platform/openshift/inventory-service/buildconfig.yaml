@@ -1,13 +1,13 @@
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
-  name: catalog-service
+  name: inventory-service
   namespace: antonio-dimarino-dev
 spec:
   output:
     to:
       kind: ImageStreamTag
-      name: catalog-service:latest
+      name: inventory-service:latest
   source:
     type: Binary
   strategy:

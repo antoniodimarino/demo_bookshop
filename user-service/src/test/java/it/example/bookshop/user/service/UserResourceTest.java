@@ -95,4 +95,29 @@ class UserResourceTest {
             // THEN: Ci aspettiamo un errore 401 Unauthorized
             .statusCode(401);
     }
+
+    @Test
+    void testGetMeSuccess() {
+        RegisterRequest registerRequest = new RegisterRequest("me@example.com", "password123", "Login", "User");
+        given().contentType(ContentType.JSON).body(registerRequest).when().post("/users/register")
+        .then().statusCode(201);
+
+        AuthRequest loginRequest = new AuthRequest("me@example.com", "password123");
+        String token = given()
+            .contentType(ContentType.JSON)
+            .body(loginRequest)
+        .when()
+            .post("/users/login")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+        
+        given().header("Authorization", "Bearer " + token)
+        .when().get("/users/me").then()
+        .statusCode(200)
+        .body("email", is("me@example.com"))
+        .body("firstName", is("Login"))
+        .body("role", is("CUSTOMER"));
+        
+    }
 }

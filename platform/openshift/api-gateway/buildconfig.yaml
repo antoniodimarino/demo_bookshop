@@ -2,7 +2,7 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   name: api-gateway
-  namespace: <nome_progetto_openshift>
+  namespace: antonio-dimarino-dev
 spec:
   output:
     to:

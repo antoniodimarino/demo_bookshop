@@ -2,8 +2,8 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: api-gateway
-  namespace: <nome_progetto_openshift>
+  namespace: antonio-dimarino-dev
 spec:
   to: { kind: Service, name: api-gateway }
   port:
-    targetPort: 80
+    targetPort: http

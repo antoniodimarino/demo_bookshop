@@ -10,11 +10,12 @@ import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -95,5 +96,27 @@ class CatalogResourceTest {
         .then()
             // THEN: Ci aspettiamo un errore 409 Conflict
             .statusCode(409);
+    }
+
+    @Test
+    void teslListBooks() throws Exception {
+        Book b1 = new Book();
+        b1.isbn = "9781111111111";
+        b1.title = "Libro test 1";
+        b1.persist();
+
+        Book b2 = new Book();
+        b2.isbn = "9781111111112";
+        b2.title = "Libro test 2";
+        b2.persist();
+
+        given()
+        .when()
+        .get("/catalog/books")
+        .then()
+        .statusCode(200)
+        .body("$", hasSize(2))
+        .body("[0].title", is("Libro test 1"))
+        .body("[1].title", is("Libro test 2"));
     }
 }
