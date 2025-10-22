@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 @Path("/catalog")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,12 +33,19 @@ public class CatalogResource {
         if (b == null) {
             throw new NotFoundException();
         }
-        return Map.of(
-            "isbn", b.isbn, "title", b.title, "description", b.description, "language", b.language,
-            "publishedYear", b.publishedYear, "priceCents", b.priceCents,
-            "authors", b.authors.stream().map(a -> a.name).toList(),
-            "categories", b.categories.stream().map(c -> c.slug).toList()
-        );
+        
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("isbn", b.isbn);
+        map.put("title", b.title);
+        map.put("description", b.description);
+        map.put("language", b.language);
+        map.put("publishedYear", b.publishedYear);
+        map.put("priceCents", b.priceCents);
+        map.put("authors", b.authors.stream().map(a -> a.name).toList());
+        map.put("categories", b.categories.stream().map(c -> c.slug).toList());
+        
+        return map;
     }
 
     @GET
