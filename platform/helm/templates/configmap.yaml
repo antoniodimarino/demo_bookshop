@@ -1,0 +1,9 @@
+{{- range .Values.services }}
+{{- if .enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name}}-config
+  namespace: {{ .Values.namespace }}
+data: {}
+{{- end}}

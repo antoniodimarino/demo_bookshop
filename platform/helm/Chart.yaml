@@ -1,0 +1,19 @@
+apiVersion: v2
+name: "bookshop"
+description: "Umbrella Chart per applicazione Bookshop"
+
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: postgresql
+    version: "14.2.3"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+
+  - name: redpanda
+    version: "5.7.15"
+    repository: "https://charts.redpanda.com/"
+    alias: kafka
+    condition: kafka.enabled
