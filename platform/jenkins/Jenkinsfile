@@ -21,14 +21,81 @@ pipeline {
         stage('Build Parent POM'){
             steps {
                 dir(".") {
-                    sh 'mvn -B -DskipTests -N install'
+                    sh 'mvn -B -DskipTests -N install' //con install creiamo e portiamo su
                 }
             }
         }
 
-        // BUILD COMMON
+        // BUILD COMMON //con install creiamo e portiamo su
+        stage('Build Common') {
+            steps {
+                dir("common") {
+                    // Use 'install' to put the artifact in the local .m2 repo
+                    sh 'mvn -B -DskipTests install'
+                }
+            }
+        }
 
-        // BUILD MICROSERVIZI
+        // BUILD MICROSERVIZI //con install creiamo e portiamo su, usiamo package
+        stage('Build Services') {
+            parallel {
+                stage('Build catalog-sercice') {
+                    steps {
+                        dir("catalog-service") {
+                            sh 'mvn -B -DskipTests package'
+                        }
+                    }
+                }
+
+                stage('Build isbn-service') {
+                    steps {
+                        dir("isbn-service") {
+                            sh 'mvn -B -DskipTests package'
+                        }
+                    }
+                }
+                
+                stage('Build inventory-service') {
+                    steps {
+                        dir("inventory-service") {
+                            sh 'mvn -B -DskipTests package'
+                        }
+                    }
+                }
+                
+                stage('Build order-service') {
+                    steps {
+                        dir("order-service") {
+                            sh 'mvn -B -DskipTests package'
+                        }
+                    }
+                }
+                
+                stage('Build payment-service') {
+                    steps {
+                        dir("payment-service") {
+                            sh 'mvn -B -DskipTests package'
+                        }
+                    }
+                }
+
+                stage('Build user-service') {
+                    steps { 
+                        dir('user-service'){ 
+                            sh 'mvn -B -DskipTests package' 
+                        } 
+                    }
+                }
+                
+                stage('Build api-gateway') {
+                    steps {
+                        dir("api-gateway") {
+                            sh 'mvn -B -DskipTests package'
+                        }
+                    }
+                }
+            }
+        }
 
         // OPENSHIFT LOGIN
         stage('OpenShift Login') {
@@ -41,7 +108,97 @@ pipeline {
         }
 
         // BUILD IMAGE BINARY
+        stage('Image Build (Binary Builds)') {
+            steps {
+                script {
+                    
+                    dir("catalog-service") {
+                        sh 'oc get is catalog-service || oc apply -f ../platform/openshift/catalog-service/imagestream.yaml'
+                        sh 'oc get bc catalog-service || oc apply -f ../platform/openshift/catalog-service/buildconfig.yaml'
+                        sh 'oc start-build catalog-service --from-dir=. --follow --wait=true || oc logs bc/catalog-service'
+                    }
+
+                    dir("isbn-service") {
+                        sh 'oc get is isbn-service || oc apply -f ../platform/openshift/isbn-service/imagestream.yaml'
+                        sh 'oc get bc isbn-service || oc apply -f ../platform/openshift/isbn-service/buildconfig.yaml'
+                        sh 'oc start-build isbn-service --from-dir=. --follow --wait=true || oc logs bc/isbn-service'
+                    }
+                    
+                    dir("inventory-service") {
+                        sh 'oc get is inventory-service || oc apply -f ../platform/openshift/inventory-service/imagestream.yaml'
+                        sh 'oc get bc inventory-service || oc apply -f ../platform/openshift/inventory-service/buildconfig.yaml'
+                        sh 'oc start-build inventory-service --from-dir=. --follow --wait=true || oc logs bc/inventory-service'
+                    }
+                    
+                    dir("order-service") {
+                        sh 'oc get is order-service || oc apply -f ../platform/openshift/order-service/imagestream.yaml'
+                        sh 'oc get bc order-service || oc apply -f ../platform/openshift/order-service/buildconfig.yaml'
+                        sh 'oc start-build order-service --from-dir=. --follow --wait=true || oc logs bc/order-service'
+                    }
+                    
+                    dir("payment-service") {
+                        sh 'oc get is payment-service || oc apply -f ../platform/openshift/payment-service/imagestream.yaml'
+                        sh 'oc get bc payment-service || oc apply -f ../platform/openshift/payment-service/buildconfig.yaml'
+                        sh 'oc start-build payment-service --from-dir=. --follow --wait=true || oc logs bc/payment-service'
+                    }
+
+                    dir('user-service') {
+                        sh 'oc get is user-service || oc apply -f ../platform/openshift/user-service/imagestream.yaml'
+                        sh 'oc get bc user-service || oc apply -f ../platform/openshift/user-service/buildconfig.yaml'
+                        sh 'oc start-build user-service --from-dir=. --follow --wait=true || oc logs bc/user-service'
+                    }
+                    
+                    dir("api-gateway") {
+                        sh 'oc get is api-gateway || oc apply -f ../platform/openshift/api-gateway/imagestream.yaml'
+                        sh 'oc get bc api-gateway || oc apply -f ../platform/openshift/api-gateway/buildconfig.yaml'
+                        sh 'oc start-build api-gateway --from-dir=. --follow --wait=true || oc logs bc/api-gateway'
+                    }
+                    
+                }
+            }
+        }
 
         // DEPLOY/UPDATE
+        stage('Deploy/Update') {
+            steps {
+                script {
+                    
+                    sh 'oc apply -f platform/openshift/catalog-service/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/catalog-service/service.yaml'
+                    sh 'oc apply -f platform/openshift/catalog-service/route.yaml'
+                    sh 'oc rollout status deploy/catalog-service --timeout=120s || true'
+
+                    sh 'oc apply -f platform/openshift/isbn-service/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/isbn-service/service.yaml'
+                    sh 'oc apply -f platform/openshift/isbn-service/route.yaml'
+                    sh 'oc rollout status deploy/isbn-service --timeout=120s || true'
+                    
+                    sh 'oc apply -f platform/openshift/inventory-service/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/inventory-service/service.yaml'
+                    sh 'oc apply -f platform/openshift/inventory-service/route.yaml'
+                    sh 'oc rollout status deploy/inventory-service --timeout=120s || true'
+                    
+                    sh 'oc apply -f platform/openshift/order-service/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/order-service/service.yaml'
+                    sh 'oc apply -f platform/openshift/order-service/route.yaml'
+                    sh 'oc rollout status deploy/order-service --timeout=120s || true'
+                    
+                    sh 'oc apply -f platform/openshift/payment-service/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/payment-service/service.yaml'
+                    sh 'oc apply -f platform/openshift/payment-service/route.yaml'
+                    sh 'oc rollout status deploy/payment-service --timeout=120s || true'
+
+                    sh 'oc apply -f platform/openshift/user-service/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/user-service/service.yaml'
+                    sh 'oc apply -f platform/openshift/user-service/route.yaml'
+                    sh 'oc rollout status deploy/user-service --timeout=120s || true'
+                    
+                    sh 'oc apply -f platform/openshift/api-gateway/deployment.yaml'
+                    sh 'oc apply -f platform/openshift/api-gateway/service.yaml'
+                    sh 'oc apply -f platform/openshift/api-gateway/route.yaml'
+                    sh 'oc rollout status deploy/api-gateway --timeout=120s || true'
+                }
+            }
+        }
     }
 }
