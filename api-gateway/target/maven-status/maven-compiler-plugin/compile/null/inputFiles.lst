@@ -1,2 +1,7 @@
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\clients\CatalogClient.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\GatewayResource.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\Application.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\clients\CatalogClient.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\clients\InventoryClient.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\clients\OrderClient.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\clients\PaymentClient.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\clients\UserClient.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\api-gateway\src\main\java\it\example\bookshop\api\gateway\GatewayResource.java

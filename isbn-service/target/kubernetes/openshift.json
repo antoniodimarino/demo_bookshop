@@ -5,9 +5,7 @@
     "annotations" : {
       "app.openshift.io/vcs-uri" : "<<unknown>>",
       "app.quarkus.io/quarkus-version" : "3.13.2",
-      "app.quarkus.io/commit-id" : "dfa03ff289f7ee497e6a51c06255a5f34d269699",
-      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
-      "app.quarkus.io/build-timestamp" : "2025-10-14 - 14:13:16 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "isbn-service",
@@ -53,9 +51,7 @@
     "annotations" : {
       "app.openshift.io/vcs-uri" : "<<unknown>>",
       "app.quarkus.io/quarkus-version" : "3.13.2",
-      "app.quarkus.io/commit-id" : "dfa03ff289f7ee497e6a51c06255a5f34d269699",
-      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
-      "app.quarkus.io/build-timestamp" : "2025-10-14 - 14:13:16 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "isbn-service",
@@ -77,9 +73,7 @@
     "annotations" : {
       "app.openshift.io/vcs-uri" : "<<unknown>>",
       "app.quarkus.io/quarkus-version" : "3.13.2",
-      "app.quarkus.io/commit-id" : "dfa03ff289f7ee497e6a51c06255a5f34d269699",
-      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
-      "app.quarkus.io/build-timestamp" : "2025-10-14 - 14:13:16 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "isbn-service",
@@ -115,9 +109,7 @@
     "annotations" : {
       "app.openshift.io/vcs-uri" : "<<unknown>>",
       "app.quarkus.io/quarkus-version" : "3.13.2",
-      "app.quarkus.io/commit-id" : "dfa03ff289f7ee497e6a51c06255a5f34d269699",
-      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
-      "app.quarkus.io/build-timestamp" : "2025-10-14 - 14:13:16 +0000"
+      "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
     },
     "labels" : {
       "app.kubernetes.io/managed-by" : "quarkus",
@@ -141,9 +133,7 @@
           "alpha.image.policy.openshift.io/resolve-names" : "*",
           "app.openshift.io/vcs-uri" : "<<unknown>>",
           "app.quarkus.io/quarkus-version" : "3.13.2",
-          "app.quarkus.io/commit-id" : "dfa03ff289f7ee497e6a51c06255a5f34d269699",
-          "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/demo_bookshop.git",
-          "app.quarkus.io/build-timestamp" : "2025-10-14 - 14:13:16 +0000"
+          "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
         },
         "labels" : {
           "app.kubernetes.io/managed-by" : "quarkus",

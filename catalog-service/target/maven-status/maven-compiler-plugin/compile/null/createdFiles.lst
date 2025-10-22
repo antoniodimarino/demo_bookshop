@@ -1,8 +1,0 @@
-it\example\bookshop\catalog\service\events\BookEvents.class
-it\example\bookshop\catalog\service\CatalogResource.class
-it\example\bookshop\catalog\service\isbn\IsbnClient.class
-it\example\bookshop\catalog\service\model\Author.class
-it\example\bookshop\catalog\service\model\Book.class
-it\example\bookshop\catalog\service\model\Category.class
-it\example\bookshop\catalog\service\isbn\IsbnClient$ValidationResult.class
-it\example\bookshop\catalog\service\events\BookCreatedPayload.class

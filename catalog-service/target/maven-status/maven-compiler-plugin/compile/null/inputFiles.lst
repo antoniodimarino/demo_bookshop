@@ -1,7 +1,8 @@
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\CatalogResource.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\events\BookCreatedPayload.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\events\BookEvents.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\isbn\IsbnClient.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\model\Author.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\model\Book.java
-C:\Users\anton\Desktop\Corso Cloud\demo_bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\model\Category.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\Application.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\CatalogResource.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\events\BookCreatedPayload.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\events\BookEvents.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\isbn\IsbnClient.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\model\Author.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\model\Book.java
+H:\Il mio Drive\GDG\Corso OpenShift\Bookshop\catalog-service\src\main\java\it\example\bookshop\catalog\service\model\Category.java

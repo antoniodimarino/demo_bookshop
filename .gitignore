@@ -1,1 +1,73 @@
 .env
+# ==================================
+# File e cartelle di Sistema Operativo
+# ==================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==================================
+# Log e File Temporanei
+# ==================================
+*.log
+*.tmp
+*~
+
+# ==================================
+# IDE & Editor
+# ==================================
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VSCode
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+
+# ==================================
+# Java / Maven / Quarkus (Backend)
+# ==================================
+# La cartella 'target' contiene tutti gli output della build (class, jar, report)
+# Questa è la regola più importante per i progetti Java/Maven.
+target/
+
+# Cache di Quarkus e file di sviluppo
+.quarkus/
+build/
+
+# ==================================
+# Node.js / Vite (per bookshop-frontend)
+# ==================================
+# La cartella 'node_modules' contiene tutte le dipendenze scaricate
+# È fondamentale ignorarla.
+node_modules/
+
+# La cartella 'dist' contiene il bundle di produzione di Vite
+dist/
+
+# Cache di Vite
+.vite/
+.vite-inspect/
+
+# Log di NPM e Yarn
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Report di test/coverage
+coverage/
+.nyc_output/
+
+# File di ambiente locali (non commettere MAI chiavi segrete o config locali)
+.env.local
+.env.*.local
+
+jenkins_deploy_key*

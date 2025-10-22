@@ -17,6 +17,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
+import it.example.bookshop.common.dto.AdjustRequest;
+
 @Path("/inventory")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -69,10 +71,6 @@ public class InventoryResource {
             throw new NotFoundException();
         }
         return item;
-    }
-
-    public record AdjustRequest(int delta, String location) {
-
     }
 
     @POST

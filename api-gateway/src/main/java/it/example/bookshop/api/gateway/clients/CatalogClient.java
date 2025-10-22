@@ -30,6 +30,5 @@ public interface CatalogClient {
 
     @POST
     @Path("/books")
-    BookUpsert create(BookUpsert book);
-
+    BookUpsert create(BookUpsert upsert);
 }
