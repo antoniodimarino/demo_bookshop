@@ -2,7 +2,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: catalog-service
-  namespace: antonio-dimarino-dev
+  namespace: <nome_progetto_openshift>
 spec:
   to: { kind: Service, name: catalog-service }
   port:

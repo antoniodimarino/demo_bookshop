@@ -1,6 +1,6 @@
 APP=bookshop
 
-NS=antonio-dimarino-dev
+NS=<nome_progetto_openshift>
 
 .PHONY: ocp-login ns create-db kafka
 

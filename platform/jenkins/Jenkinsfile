@@ -8,7 +8,7 @@ pipeline {
     environment {
         OCP_API = 'https://api.rm3.7wse.p1.openshiftapps.com:6443'
         OCP_TOKEN_CRED = 'ocp-token'
-        OCP_NS = 'antonio-dimarino-dev'
+        OCP_NS = '<nome_progetto_openshift>'
     }
 
     stages {

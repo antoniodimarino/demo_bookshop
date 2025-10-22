@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: catalog-service
-  namespace: antonio-dimarino-dev
+  namespace: <nome_progetto_openshift>
 spec:
   replicas: 1
   selector:
@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: catalog-service
-        image: image-registry.openshift-image-registry.svc:5000/antonio-dimarino-dev/catalog-service:latest
+        image: image-registry.openshift-image-registry.svc:5000/<nome_progetto_openshift>/catalog-service:latest
         ports:
         - containerPort: 8080
         env:

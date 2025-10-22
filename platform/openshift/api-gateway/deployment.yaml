@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-gateway
-  namespace: antonio-dimarino-dev
+  namespace: <nome_progetto_openshift>
 spec:
   replicas: 1
   selector:
@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: image-registry.openshift-image-registry.svc:5000/antonio-dimarino-dev/api-gateway:latest
+        image: image-registry.openshift-image-registry.svc:5000/<nome_progetto_openshift>/api-gateway:latest
         ports:
         - containerPort: 8080
         env:

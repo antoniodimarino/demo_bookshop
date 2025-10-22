@@ -2,7 +2,7 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   name: catalog-service
-  namespace: antonio-dimarino-dev
+  namespace: <nome_progetto_openshift>
 spec:
   output:
     to:

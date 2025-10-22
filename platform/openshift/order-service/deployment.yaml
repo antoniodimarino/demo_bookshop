@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: order-service
-  namespace: antonio-dimarino-dev
+  namespace: <nome_progetto_openshift>
 spec:
   replicas: 1
   selector:
@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: image-registry.openshift-image-registry.svc:5000/antonio-dimarino-dev/order-service:latest
+        image: image-registry.openshift-image-registry.svc:5000/<nome_progetto_openshift>/order-service:latest
         ports:
         - containerPort: 8080
         env:

@@ -2,5 +2,5 @@ apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
   name: isbn-service
-  namespace: antonio-dimarino-dev
+  namespace: <nome_progetto_openshift>
 spec: {}
