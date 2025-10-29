@@ -3,12 +3,15 @@ pipeline {
     tools {
         jdk 'jdk17'
         maven 'Maven3'
-
+        gitleaks 'gitleaks'
     }
     environment {
         OCP_API = 'https://api.rm3.7wse.p1.openshiftapps.com:6443'
         OCP_TOKEN_CRED = 'ocp-token'
         OCP_NS = '<nome_progetto_openshift>'
+        OCP_NS_PROD = '<nome_progetto_openshift_prod>'
+
+        REGISTRY_URL = 'image-registry.openshift-image-registry.svc:5000'
     }
 
     stages {
@@ -16,6 +19,38 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Analisi Statica Pre-Build') {
+            parallel {
+                stage('Scansione Credential Leaks') {
+                    steps {
+                        sh 'gitleaks detect --source="." --verbose -f json -r gitleaks-report.json || true'
+                    }
+                }
+                stage('Lint ESLint & HadoLint') {
+                    dir('bookshop-frontend'){
+                        sh 'npm install'
+                        sh 'npm run lint'
+                    }
+
+                    sh 'hadolint api-gateway/Dockerfile'
+                    sh 'hadolint bookshop-frontend/Dockerfile'
+                    sh 'hadolint catalog-service/Dockerfile'
+                    sh 'hadolint inventory-service/Dockerfile'
+                    sh 'hadolint isbn-service/Dockerfile'
+                    sh 'hadolint order-service/Dockerfile'
+                    sh 'hadolint payment-service/Dockerfile'
+                    sh 'hadolint user-service/Dockerfile'
+                }
+                
+                stage('SAST Semgrep') {
+
+                }
+                stage ('IAC Scan & Compliance Checkov & Conftest') {
+
+                }
             }
         }
 
