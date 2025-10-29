@@ -1,4 +1,3 @@
-.env
 # ==================================
 # File e cartelle di Sistema Operativo
 # ==================================
@@ -71,3 +70,5 @@ coverage/
 .env.*.local
 
 jenkins_deploy_key*
+
+user-service/src/main/resources/META-INF/resources/TeraCopyTestFile-1234567890

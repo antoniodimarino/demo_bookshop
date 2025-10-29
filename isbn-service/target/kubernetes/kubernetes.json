@@ -4,7 +4,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.13.2",
-      "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
+      "app.quarkus.io/commit-id" : "90b769c8be27c8683c7fe272f2d4a5f32ec8550b",
+      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/Bookshop.git",
+      "app.quarkus.io/build-timestamp" : "2025-10-26 - 18:33:51 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "isbn-service",
@@ -18,7 +20,7 @@
       "name" : "http",
       "port" : 80,
       "protocol" : "TCP",
-      "targetPort" : 8082
+      "targetPort" : 8080
     } ],
     "selector" : {
       "app.kubernetes.io/name" : "isbn-service",
@@ -32,7 +34,9 @@
   "metadata" : {
     "annotations" : {
       "app.quarkus.io/quarkus-version" : "3.13.2",
-      "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
+      "app.quarkus.io/commit-id" : "90b769c8be27c8683c7fe272f2d4a5f32ec8550b",
+      "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/Bookshop.git",
+      "app.quarkus.io/build-timestamp" : "2025-10-26 - 18:33:51 +0000"
     },
     "labels" : {
       "app.kubernetes.io/name" : "isbn-service",
@@ -45,8 +49,8 @@
     "replicas" : 1,
     "selector" : {
       "matchLabels" : {
-        "app.kubernetes.io/version" : "1.0.0",
-        "app.kubernetes.io/name" : "isbn-service"
+        "app.kubernetes.io/name" : "isbn-service",
+        "app.kubernetes.io/version" : "1.0.0"
       }
     },
     "template" : {
@@ -54,12 +58,14 @@
         "annotations" : {
           "alpha.image.policy.openshift.io/resolve-names" : "*",
           "app.quarkus.io/quarkus-version" : "3.13.2",
-          "app.quarkus.io/build-timestamp" : "2025-10-20 - 18:26:43 +0000"
+          "app.quarkus.io/commit-id" : "90b769c8be27c8683c7fe272f2d4a5f32ec8550b",
+          "app.quarkus.io/vcs-uri" : "https://github.com/antoniodimarino/Bookshop.git",
+          "app.quarkus.io/build-timestamp" : "2025-10-26 - 18:33:51 +0000"
         },
         "labels" : {
           "app.kubernetes.io/managed-by" : "quarkus",
-          "app.kubernetes.io/version" : "1.0.0",
-          "app.kubernetes.io/name" : "isbn-service"
+          "app.kubernetes.io/name" : "isbn-service",
+          "app.kubernetes.io/version" : "1.0.0"
         }
       },
       "spec" : {
@@ -78,7 +84,7 @@
             "failureThreshold" : 3,
             "httpGet" : {
               "path" : "/q/health/live",
-              "port" : 8082,
+              "port" : 8080,
               "scheme" : "HTTP"
             },
             "initialDelaySeconds" : 5,
@@ -88,7 +94,7 @@
           },
           "name" : "isbn-service",
           "ports" : [ {
-            "containerPort" : 8082,
+            "containerPort" : 8080,
             "name" : "http",
             "protocol" : "TCP"
           } ],
@@ -96,7 +102,7 @@
             "failureThreshold" : 3,
             "httpGet" : {
               "path" : "/q/health/ready",
-              "port" : 8082,
+              "port" : 8080,
               "scheme" : "HTTP"
             },
             "initialDelaySeconds" : 5,
@@ -108,7 +114,7 @@
             "failureThreshold" : 3,
             "httpGet" : {
               "path" : "/q/health/started",
-              "port" : 8082,
+              "port" : 8080,
               "scheme" : "HTTP"
             },
             "initialDelaySeconds" : 5,

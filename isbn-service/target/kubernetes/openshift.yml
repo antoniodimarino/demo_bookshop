@@ -5,7 +5,9 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/build-timestamp: 2025-10-20 - 18:26:43 +0000
+    app.quarkus.io/commit-id: 90b769c8be27c8683c7fe272f2d4a5f32ec8550b
+    app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/Bookshop.git
+    app.quarkus.io/build-timestamp: 2025-10-26 - 18:33:51 +0000
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -17,7 +19,7 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      targetPort: 8082
+      targetPort: 8080
   selector:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -29,9 +31,9 @@ metadata:
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
-  name: s2i-java
+  name: openjdk-17
 spec:
-  dockerImageRepository: fabric8/s2i-java
+  dockerImageRepository: registry.access.redhat.com/ubi8/openjdk-17
   lookupPolicy:
     local: true
 ---
@@ -41,7 +43,9 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/build-timestamp: 2025-10-20 - 18:26:43 +0000
+    app.quarkus.io/commit-id: 90b769c8be27c8683c7fe272f2d4a5f32ec8550b
+    app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/Bookshop.git
+    app.quarkus.io/build-timestamp: 2025-10-26 - 18:33:51 +0000
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -58,7 +62,9 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/build-timestamp: 2025-10-20 - 18:26:43 +0000
+    app.quarkus.io/commit-id: 90b769c8be27c8683c7fe272f2d4a5f32ec8550b
+    app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/Bookshop.git
+    app.quarkus.io/build-timestamp: 2025-10-26 - 18:33:51 +0000
   labels:
     app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
@@ -76,7 +82,7 @@ spec:
     sourceStrategy:
       from:
         kind: ImageStreamTag
-        name: s2i-java:2.3
+        name: openjdk-17:1.19
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -84,34 +90,57 @@ metadata:
   annotations:
     app.openshift.io/vcs-uri: <<unknown>>
     app.quarkus.io/quarkus-version: 3.13.2
-    app.quarkus.io/build-timestamp: 2025-10-20 - 18:26:43 +0000
+    app.quarkus.io/commit-id: 90b769c8be27c8683c7fe272f2d4a5f32ec8550b
+    app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/Bookshop.git
+    app.quarkus.io/build-timestamp: 2025-10-26 - 18:33:51 +0000
   labels:
     app.kubernetes.io/managed-by: quarkus
     app.openshift.io/runtime: quarkus
-    app.kubernetes.io/name: isbn-service
     app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/name: isbn-service
   name: isbn-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: isbn-service
       app.kubernetes.io/version: 1.0.0
+      app.kubernetes.io/name: isbn-service
   template:
     metadata:
       annotations:
         alpha.image.policy.openshift.io/resolve-names: '*'
         app.openshift.io/vcs-uri: <<unknown>>
         app.quarkus.io/quarkus-version: 3.13.2
-        app.quarkus.io/build-timestamp: 2025-10-20 - 18:26:43 +0000
+        app.quarkus.io/commit-id: 90b769c8be27c8683c7fe272f2d4a5f32ec8550b
+        app.quarkus.io/vcs-uri: https://github.com/antoniodimarino/Bookshop.git
+        app.quarkus.io/build-timestamp: 2025-10-26 - 18:33:51 +0000
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.openshift.io/runtime: quarkus
-        app.kubernetes.io/name: isbn-service
         app.kubernetes.io/version: 1.0.0
+        app.kubernetes.io/name: isbn-service
     spec:
       containers:
         - env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: postgresql
+            - name: DB_HOST
+              value: postgresql
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: postgresql
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: postgresql
             - name: JAVA_APP_JAR
               value: /deployments/quarkus-run.jar
           image: isbn-service:1.0.0
@@ -120,7 +149,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /q/health/live
-              port: 8082
+              port: 8080
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -128,14 +157,14 @@ spec:
             timeoutSeconds: 10
           name: isbn-service
           ports:
-            - containerPort: 8082
+            - containerPort: 8080
               name: http
               protocol: TCP
           readinessProbe:
             failureThreshold: 3
             httpGet:
               path: /q/health/ready
-              port: 8082
+              port: 8080
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -145,7 +174,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /q/health/started
-              port: 8082
+              port: 8080
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10

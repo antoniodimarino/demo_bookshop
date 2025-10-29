@@ -1,23 +1,25 @@
 package it.example.bookshop.catalog.service;
 
+import java.util.List;
+
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.when;
+
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import it.example.bookshop.catalog.service.isbn.IsbnClient;
 import it.example.bookshop.catalog.service.model.Book;
 import it.example.bookshop.common.dto.BookUpsert;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
-import java.util.List;
-
-import static io.restassured.RestAssured.given;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import jakarta.inject.Inject;
+import jakarta.transaction.UserTransaction;
 
 @QuarkusTest
 class CatalogResourceTest {
@@ -25,6 +27,10 @@ class CatalogResourceTest {
     @InjectMock
     @RestClient
     IsbnClient isbnClient;
+
+    // Inietta UserTransaction
+    @Inject
+    UserTransaction utx;
 
     // Pulisce il DB prima di ogni test
     @BeforeEach
@@ -75,14 +81,17 @@ class CatalogResourceTest {
     }
 
     @Test
-    @Transactional
-    void testCreateBookWithDuplicateIsbn() {
+    void testCreateBookWithDuplicateIsbn() throws Exception { // Aggiungi "throws Exception"
         // GIVEN: Un libro con lo stesso ISBN è già presente nel database
         String existingIsbn = "9780321765723";
+        
+        // Avvia e committa la transazione di setup
+        utx.begin();
         Book existingBook = new Book();
         existingBook.isbn = existingIsbn;
         existingBook.title = "The Original Book";
         existingBook.persist();
+        utx.commit();
 
         BookUpsert duplicateBook = new BookUpsert(existingIsbn, "A Duplicate Book", null, null, null, null, null, null);
         when(isbnClient.validate(existingIsbn)).thenReturn(new IsbnClient.ValidationResult(existingIsbn, true));
@@ -94,29 +103,35 @@ class CatalogResourceTest {
         .when()
             .post("/catalog/books")
         .then()
-            // THEN: Ci aspettiamo un errore 409 Conflict
+            // THEN: Ora ci aspettiamo un 409 (grazie alla Fix 1, non avremo più 500)
             .statusCode(409);
     }
 
     @Test
-    void teslListBooks() throws Exception {
+    void testListBooks() throws Exception { // Aggiungi "throws Exception"
+        // GIVEN: Due libri presenti nel database (creati in una transazione separata)
+        
+        utx.begin();
         Book b1 = new Book();
-        b1.isbn = "9781111111111";
-        b1.title = "Libro test 1";
+        b1.isbn = "978-1111111111";
+        b1.title = "Il primo libro";
         b1.persist();
 
         Book b2 = new Book();
-        b2.isbn = "9781111111112";
-        b2.title = "Libro test 2";
+        b2.isbn = "978-2222222222";
+        b2.title = "Il secondo libro";
         b2.persist();
+        utx.commit();
 
+        // WHEN: Chiamiamo l'endpoint di elenco
         given()
         .when()
-        .get("/catalog/books")
+            .get("/catalog/books")
         .then()
-        .statusCode(200)
-        .body("$", hasSize(2))
-        .body("[0].title", is("Libro test 1"))
-        .body("[1].title", is("Libro test 2"));
+            // THEN: Ci aspettiamo uno status 200 e un array di 2 elementi
+            .statusCode(200)
+            .body("$", hasSize(2)) 
+            .body("[0].title", is("Il primo libro"))
+            .body("[1].isbn", is("978-2222222222"));
     }
 }

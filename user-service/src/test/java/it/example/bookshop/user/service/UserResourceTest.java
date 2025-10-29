@@ -95,13 +95,20 @@ class UserResourceTest {
             // THEN: Ci aspettiamo un errore 401 Unauthorized
             .statusCode(401);
     }
-
+    
     @Test
     void testGetMeSuccess() {
-        RegisterRequest registerRequest = new RegisterRequest("me@example.com", "password123", "Login", "User");
-        given().contentType(ContentType.JSON).body(registerRequest).when().post("/users/register")
-        .then().statusCode(201);
+        // GIVEN: Un utente registrato
+        RegisterRequest registerRequest = new RegisterRequest("me@example.com", "password123", "TestMe", "UserMe");
+        given()
+            .contentType(ContentType.JSON)
+            .body(registerRequest)
+        .when()
+            .post("/users/register")
+        .then()
+            .statusCode(201);
 
+        // AND: Un token di login ottenuto per quell'utente
         AuthRequest loginRequest = new AuthRequest("me@example.com", "password123");
         String token = given()
             .contentType(ContentType.JSON)
@@ -110,14 +117,29 @@ class UserResourceTest {
             .post("/users/login")
         .then()
             .statusCode(200)
-            .extract().path("token");
-        
-        given().header("Authorization", "Bearer " + token)
-        .when().get("/users/me").then()
-        .statusCode(200)
-        .body("email", is("me@example.com"))
-        .body("firstName", is("Login"))
-        .body("role", is("CUSTOMER"));
-        
+            .extract().path("token"); // Estraiamo il token dalla risposta
+
+        // WHEN: Chiamiamo l'endpoint /me usando il token
+        given()
+            .header("Authorization", "Bearer " + token) // Impostiamo l'header
+        .when()
+            .get("/users/me")
+        .then()
+            // THEN: Ci aspettiamo uno status 200 e i dati corretti
+            .statusCode(200)
+            .body("email", is("me@example.com"))
+            .body("firstName", is("TestMe"))
+            .body("role", is("CUSTOMER"));
+    }
+
+    @Test
+    void testGetMeUnauthorized() {
+        // WHEN: Chiamiamo l'endpoint /me senza un token
+        given()
+        .when()
+            .get("/users/me")
+        .then()
+            // THEN: Ci aspettiamo un errore 401
+            .statusCode(401);
     }
 }

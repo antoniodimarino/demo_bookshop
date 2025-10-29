@@ -5,6 +5,7 @@
         <artifactId>bookshop</artifactId>
         <version>1.0.0</version>
     </parent>
+    <groupId>it.example.bookshop</groupId>
     <artifactId>isbn-service</artifactId>
     <dependencies>
         <dependency>
