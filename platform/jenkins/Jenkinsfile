@@ -1,9 +1,53 @@
 pipeline {
-    agent any
-    tools {
-        jdk 'jdk17'
-        maven 'Maven3'
-        gitleaks 'gitleaks'
+    agent {
+        kubernetes {
+            cloud 'openshift'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9-eclipse-temurin-17
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+    volumeMounts:
+    - name: m2-repo
+      mountPath: /root/.m2
+  - name: node
+    image: node:22-alpine
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  - name: oc
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  - name: gitleaks
+    image: zricethezav/gitleaks:latest
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  - name: semgrep
+    image: returntocorp/semgrep:latest
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  - name: checkov
+    image: bridgecrew/checkov:latest
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  - name: trivy
+    image: aquasec/trivy:latest
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  - name: zap
+    image: owasp/zap2docker-stable
+    command: [ 'sleep' ]
+    args: [ '99d' ]
+  volumes:
+  - name: m2-repo
+    emptyDir: {}
+"""
+        }
+        
     }
     environment {
         OCP_API = 'https://api.rm3.7wse.p1.openshiftapps.com:6443'
@@ -26,7 +70,14 @@ pipeline {
             parallel {
                 stage('Scansione Credential Leaks') {
                     steps {
-                        sh 'gitleaks detect --source="." --verbose -f json -r gitleaks-report.json || true'
+                        container('gitleaks') {
+                            sh 'gitleaks detect --source="." --verbose -f json -r gitleaks-report.json || true'
+                        }
+                    }
+                    post {
+                        always {
+                            archiveArtifact 'gitleaks-report.json'
+                        }
                     }
                 }
                 stage('Lint ESLint & HadoLint') {
@@ -44,12 +95,32 @@ pipeline {
                     sh 'hadolint payment-service/Dockerfile'
                     sh 'hadolint user-service/Dockerfile'
                 }
-                
-                stage('SAST Semgrep') {
 
+                stage('SAST Semgrep') {
+                    steps {
+                        container('semgrep') {
+                            sh 'semgrep ci --json -o semgrep-report.json'
+                        }
+                    }
+                    post {
+                        always {
+                            archiveArtifact 'semgrep-report.json'
+                        }
+                    }
                 }
                 stage ('IAC Scan & Compliance Checkov & Conftest') {
-
+                    steps {
+                        sh 'checkov -d ./platform/openshift -o json > checkov-openshift.json'
+                        sh 'checkov -d ./platform/helm -o json > checkov-helm.json'
+                        sh 'helm template ./platform/helm/bookshop | conftest test -p ./policy -o json > conftest-report.json'
+                    }
+                    post {
+                        always {
+                            archiveArtifact 'checkov-openshift.json'
+                            archiveArtifact 'checkov-helm.json'
+                            archiveArtifact 'conftest-report.json'
+                        }
+                    }
                 }
             }
         }
@@ -69,6 +140,24 @@ pipeline {
                 dir("common") {
                     // Use 'install' to put the artifact in the local .m2 repo
                     sh 'mvn -B -DskipTests install'
+                }
+            }
+        }
+
+        stage('Test') {
+            parallel {
+                stage('Backend e microservizi') {
+                    steps {
+                        sh 'mvn -B verify' //Esegue test e Int. test
+                        sh 'mvn -B org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=7'
+                    }
+                }
+                stage('Frontend') {
+                    steps {
+                        dir('bookshop-frontend') {
+                            sh 'npm audit --audit-level=high'
+                        }
+                    }
                 }
             }
         }
@@ -148,6 +237,11 @@ pipeline {
         stage('Image Build (Binary Builds)') {
             steps {
                 script {
+
+                    container('oc') {
+                        // Passiamo il token OCP a Trivy per l'autenticazione al registry
+                        sh "oc whoami -t | trivy registry login -u $(oc whoami) --password-stdin ${INTERNAL_REGISTRY}"
+                    }
                     
                     dir("catalog-service") {
                         sh 'oc get is catalog-service || oc apply -f ../platform/openshift/catalog-service/imagestream.yaml'
@@ -155,23 +249,31 @@ pipeline {
                         sh 'oc start-build catalog-service --from-dir=. --follow --wait=true || oc logs bc/catalog-service'
                     }
 
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH --format json -o trivy-catalog.json ${env.REGISTRY_URL}/${env.OCP_NS}/catalog-service:latest"
+
                     dir("isbn-service") {
                         sh 'oc get is isbn-service || oc apply -f ../platform/openshift/isbn-service/imagestream.yaml'
                         sh 'oc get bc isbn-service || oc apply -f ../platform/openshift/isbn-service/buildconfig.yaml'
                         sh 'oc start-build isbn-service --from-dir=. --follow --wait=true || oc logs bc/isbn-service'
                     }
+
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${env.REGISTRY_URL}/${env.OCP_NS}/isbn-service:latest"
                     
                     dir("inventory-service") {
                         sh 'oc get is inventory-service || oc apply -f ../platform/openshift/inventory-service/imagestream.yaml'
                         sh 'oc get bc inventory-service || oc apply -f ../platform/openshift/inventory-service/buildconfig.yaml'
                         sh 'oc start-build inventory-service --from-dir=. --follow --wait=true || oc logs bc/inventory-service'
                     }
+
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${env.REGISTRY_URL}/${env.OCP_NS}/inventory-service:latest"
                     
                     dir("order-service") {
                         sh 'oc get is order-service || oc apply -f ../platform/openshift/order-service/imagestream.yaml'
                         sh 'oc get bc order-service || oc apply -f ../platform/openshift/order-service/buildconfig.yaml'
                         sh 'oc start-build order-service --from-dir=. --follow --wait=true || oc logs bc/order-service'
                     }
+
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${env.REGISTRY_URL}/${env.OCP_NS}/order-service:latest"
                     
                     dir("payment-service") {
                         sh 'oc get is payment-service || oc apply -f ../platform/openshift/payment-service/imagestream.yaml'
@@ -179,19 +281,27 @@ pipeline {
                         sh 'oc start-build payment-service --from-dir=. --follow --wait=true || oc logs bc/payment-service'
                     }
 
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${env.REGISTRY_URL}/${env.OCP_NS}/payment-service:latest"
+
                     dir('user-service') {
                         sh 'oc get is user-service || oc apply -f ../platform/openshift/user-service/imagestream.yaml'
                         sh 'oc get bc user-service || oc apply -f ../platform/openshift/user-service/buildconfig.yaml'
                         sh 'oc start-build user-service --from-dir=. --follow --wait=true || oc logs bc/user-service'
                     }
+
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${env.REGISTRY_URL}/${env.OCP_NS}/user-service:latest"
                     
                     dir("api-gateway") {
                         sh 'oc get is api-gateway || oc apply -f ../platform/openshift/api-gateway/imagestream.yaml'
                         sh 'oc get bc api-gateway || oc apply -f ../platform/openshift/api-gateway/buildconfig.yaml'
                         sh 'oc start-build api-gateway --from-dir=. --follow --wait=true || oc logs bc/api-gateway'
                     }
-                    
+
+                    sh "trivy image --exit-code 1 --severity CRITICAL,HIGH ${env.REGISTRY_URL}/${env.OCP_NS}/api-gateway:latest"
                 }
+            }
+            post {
+                always { archiveArtifacts '**/trivy-*.json' }
             }
         }
 
@@ -234,6 +344,78 @@ pipeline {
                     sh 'oc apply -f platform/openshift/api-gateway/service.yaml'
                     sh 'oc apply -f platform/openshift/api-gateway/route.yaml'
                     sh 'oc rollout status deploy/api-gateway --timeout=120s || true'
+                }
+            }
+        }
+
+        stage('DAST') {
+            parallel {
+                stage('DAST OWASP ZAP') {
+                    steps {
+                        container('zap') {
+                            sh "zap-baseline.py -t ${STAGING_FRONTEND_URL} -r zap-report.html"
+                        }
+                    }
+                    post {
+                        always { archiveArtifacts 'zap-report.html' }
+                    }
+                }
+                stage('Infrastructure Scan') {
+                    steps {
+                        container('trivy') {
+                            sh "trivy k8s --report=summary cluster --format json -o trivy-k8s-report.json"
+                        }
+                    }
+                    post {
+                        always { archiveArtifacts 'trivy-k8s-report.json' }
+                    }
+                }
+            }
+        }
+
+        stage('Approvazione in produzione') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    input "Deployare in PROD?"
+                }
+            }
+        }
+
+        stage('Pubblicazione Immagini in Prod') {
+            steps {
+                script {
+                    def promotionTasks = [:]
+                    def allServices = env.SERVICES_BACKEND + " " + env.SERVICES_FRONTEND
+
+                    allServices.split(' ').each { serviceName ->
+                        promotionTasks[serviceName] = {
+                            stage("Promote ${serviceName}") {
+                                container('oc') {
+                                    sh "echo 'Promuovendo ${serviceName} in ${OCP_NS_PROD}...'"
+                                    sh "oc tag ${OCP_NS}/${serviceName}:latest ${OCP_NS_PROD}/${serviceName}:latest"
+                                }
+                            }
+                        }
+                    }
+                    parallel promotionTasks
+                }
+            }
+        }
+
+        stage('Rollout in Prod') {
+            steps {
+                container('oc') {
+                    sh "echo 'Deployando chart Helm in ${OCP_NS_PROD}...'"
+                    // Applichiamo il ConfigMap del frontend per la produzione
+                    sh "sed 's,namespace: .*,namespace: ${OCP_NS_PROD},g' platform/openshift/bookshop-frontend/configmap.yaml | sed 's,VITE_API_URL: .*,VITE_API_URL: \"${PROD_API_URL}\",g' | oc apply -f - -n ${OCP_NS_PROD}"
+                    
+                    // Eseguiamo il deploy con Helm, usando l'URL di prod
+                    sh """
+                    helm upgrade --install bookshop-prod ./platform/helm/bookshop \
+                        --namespace ${OCP_NS_PROD} \
+                        --set frontend.apiUrl=${PROD_API_URL} \
+                        --wait
+                    """
                 }
             }
         }
